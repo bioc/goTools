@@ -3,7 +3,7 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{goTools overview}
-% \VignetteDepends{tools, annotate, GO }
+% \VignetteDepends{tools, annotate, GO, hgu133a }
 % \VignetteKeywords{Gene Ontology}
 % \VignettePackage{goTools}
 \documentclass[11pt]{article}
