@@ -1,7 +1,7 @@
 #####################################################
-# Gotool.R
+# Gotools.R
 #
-# Modified: March 24, 2004
+# Modified: October 18, 2004
 # Functions for description of oligos using Gene Ontology
 #
 # TO USE
@@ -18,8 +18,9 @@
 # to one id. Needs to be entered as "GO:0000000"
 
 
+
 getGoCategory <- function(id) {
-  cat <- names(get(id, env=GOTERM))
+  cat <- Ontology(get(id, env=GOTERM))
   return(cat)
 }
 
@@ -35,26 +36,17 @@ getGOTerm <- function (num)
     {
       res <- get(num, env=GOTERM)
 
-      if (names(res)== "BP")
-        return(list(name = res[[1]], type = "Biological Process"))
-      if (names(res)== "CC")
-        return(list(name = res[[1]], type = "Cellular Component"))
-      if(names(res) == "MF")
-        return(list(name = res[[1]], type = "Molecular Function"))
+      if (Ontology(res)== "BP")
+        return(list(name = Term(res), type = "Biological Process"))
+      if (Ontology(res)== "CC")
+        return(list(name = Term(res), type = "Cellular Component"))
+      if(Ontology(res) == "MF")
+        return(list(name = Term(res), type = "Molecular Function"))
     }
 }
 
-# getGOTerm <- function (num)
-#{
- # if (!nchar(num[1]))
- #   return(list())
- # if (exists(num, GOBPID2TERM))
- #   return(list(name = get(num, GOBPID2TERM), type = "Biological Process"))
- # if (exists(num, GOCCID2TERM))
- #   return(list(name = get(num, GOCCID2TERM), type = "Cellular Component"))
- # if (exists(num, GOMFID2TERM))
- #   return(list(name = get(num, GOMFID2TERM), type = "Molecular Function"))
-#}
+
+
 
 #####################################################
 # Function: getGOList
@@ -203,7 +195,7 @@ getGOID <- function (x, probeType="operon")
     {
       library(probeType, character.only = TRUE)
       GOenv <- get(paste(probeType, "GO", sep = ""))
-      tmp <- multiget(x, env = GOenv)
+      tmp <- mget(x, env = GOenv)
       res <- lapply(tmp, names)
     }
   return(res)

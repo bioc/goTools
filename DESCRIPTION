@@ -1,8 +1,8 @@
 Package: goTools
-Version: 1.0.1
-Date: 2004-03-24
+Version: 1.0.2
+Date: 2004-10-18
 Title: Functions for Gene Ontology database
-Depends:  annotate, GO 
+Depends:  Biobase, annotate, GO 
 Suggests: hgu133a
 Author: Yee Hwa (Jean) Yang <jean@biostat.ucsf.edu>, Agnes Paquet <apaquet@medsfgh.ucsf.edu>
 Maintainer: Agnes Paquet <apaquet@medsfgh.ucsf.edu>
