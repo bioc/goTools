@@ -1,0 +1,217 @@
+%
+% NOTE -- ONLY EDIT THE .Rnw FILE!!!  The .tex file is
+% likely to be overwritten.
+%
+% \VignetteIndexEntry{goTools overview}
+% \VignetteDepends{tools, annotate, GO }
+% \VignetteKeywords{Gene Ontology}
+% \VignettePackage{goTools}
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,epsfig,fullpage}%,psfig,pstricks
+\usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+
+\parindent 0in
+
+\bibliographystyle{abbrvnat}
+
+\begin{document}
+
+\title{\bf Getting started with \Rpackage{goTools} package}
+
+\author{Agnes Paquet$^1$ and (Jean) Yee Hwa Yang$^2$}
+
+\maketitle
+
+
+\begin{center}
+1. Functional Genomics Core Facility, University of California, San Francisco, {\tt apaquet@medsfgh.ucsf.edu}\\
+2. Department of Medicine, University of California, San Francisco, \url{http://www.biostat.ucsf.edu/jean}
+\end{center}
+
+% library(tools)
+% setwd("c:/MyDoc/Projects/Jean/CVS/goTools/inst/doc")
+% Rnwfile<- file.path("c:/MyDoc/Projects/Jean/CVS/goTools/inst/doc","goTools.Rnw")
+% Sweave(Rnwfile,pdf=TRUE,eps=TRUE,stylepath=TRUE,driver=RweaveLatex())
+
+
+\tableofcontents
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+This  document provides a tutorial for the \Rpackage{goTools} package, which
+allow graphical comparisons of functional groups between two sets of
+genes.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Getting started}
+
+{\bf Installing the package.} To install the \Rpackage{goTools} package, go
+to the bioconductor installation web site
+\url{http://www.bioconductor.org/faq.html} for more detailed
+instructions.\\
+{\bf Help files.}  As with any R package, detailed information on
+functions, classes and methods can be obtained in the help files. For
+instance, to view the help file for the function {\tt ontoCompare} in a
+browser, use {\tt help.start()} followed by {\tt ?ontoCompare}.\\ 
+{\bf Case study.} We demonstrate the functionality with a randomly
+selected set of probes IDs from both Affymetrix hgu133a and Operon version
+2.  To load the \Robject{probeID} dataset, use {\tt data(probeID)}, and to view a
+description of the experiments and data, type {\tt ?probeID}.\\ 
+{\bf Sweave.} This document was generated using the \Rfunction{Sweave}
+function from the R \Rpackage{ tools} package. The source file is in the {\tt
+/inst/doc} directory of the package \Rpackage{goTools}. 
+
+
+To begin, let's load the package and the data into your R session.
+<<eval=TRUE,echo=TRUE>>=
+library("goTools", verbose=FALSE)
+data(probeID)  
+ls()
+@
+
+<<eval=TRUE>>=
+class(affylist)
+length(affylist)
+@
+
+<<eval=TRUE, echo=TRUE>>=
+operonlist[[1]][1:5]
+length(operonlist)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Comparing two sets of genes}
+
+Gene Ontology is a Direct Acyclic Graph (DAG) that provides three structured
+ networks of defined terms to describe gene product attributes:
+ Molecular Function (MF), Biological 
+ Process (BP) and Cellular Component (CC). A gene product has one or more
+ molecular functions and is used in one or more biological processes; it
+ might be associated with one or more cellular components. To learn more
+ about GO and DAG, please refer to Gene Ontology web site
+ \url(http://www.geneontology.org/).\\
+
+We have created a set of R functions that use GO structure to describe and
+compare the composition of sets of genes (or probes). We use as common
+reference a set of GO ids, called \Rfunction{EndNodeList}, composed of nodes
+of the DAG located one level under MF, BP or CC.  For each gene in the
+set, we find corresponding ontologies in the tree, if any. Then, we go up
+the tree until we reach the nodes in EndNodeList. The result is given as 
+the percentage of genes derived from each node in
+\Rfunction{EndNodeList}.\\
+
+\subsection{How to use goTools}
+The main function that we provide is \Rfunction{ontoCompare}. It takes
+as argument \bf{a list} of probe ids. Their type must be specified in
+the argument \Robject{probeType}. For more details about it,you can
+refer to the corresponding help file by typing:
+ \Rfunction{?ontoCompare}.
+
+The following examples demonstrate how to use \Rfunction{ontoCompare} on the
+\Robject{probeID} dataset.
+
+
+<<eval=TRUE,echo=TRUE>>=
+res <-ontoCompare(affylist, probeType="hgu133a", plot=TRUE)
+res[,1:2]
+@
+
+<<eval=TRUE,echo=TRUE>>=
+res2 <- ontoCompare(operonlist["L1"], probeType="operon", method="TIDS",
+plot=TRUE)
+@
+
+See Figure \ref{fig:ontoPlotEg}
+
+
+
+
+\subsection{Plotting the results}
+
+The plots were produced using the function \Rfunction{ontoPlot}. It is called by
+\Rfunction{ontoCompare} when you set \Robject{plot=TRUE}. You can also call it
+directly, passing as argument \Rfunction{ontoCompare}
+results. If only one set of genes is passed to
+\Rfunction{ontoCompare}, \Rfunction{ontoPlot} will return a pie
+chart. In other cases, it will return a bargraph. You can modify
+\Rfunction{ontoPlot} layout parameters using usual R graphics layout
+parameters. For greater details, consult the vignettes and help files
+for the package \Rpackage{marray}.
+
+<<ontoPlotEg1,fig=TRUE,prefix=FALSE,echo=TRUE,include=FALSE>>=
+res <- ontoCompare(affylist, probeType="hgu133a", plot=TRUE)
+@
+
+<<ontoPlotEg2,fig=TRUE,prefix=FALSE,echo=TRUE,include=FALSE>>=
+par(mar=c(5,8,5,8))
+res2 <- ontoCompare(operonlist["L1"], probeType="operon",
+method="TIDS",plot=FALSE)
+ontoPlot(res2, cex=0.7)
+@
+
+
+\section{How to set up the "end nodes"}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The default end nodes list is defined by a call to the
+function \Rfunction{EndNodeList}. It contains all children of
+MF(GO:0003674), BP(GO:0008150) and CC (GO:0005575). 
+
+\subsection{Customized end nodes list}
+If you want to use more ontologies to describe your set of genes, you
+can use the function\\
+ \mbox{\Rfunction{CustomEndNodeList(id,rank)}} to create a bigger
+set of end nodes. It returns all GO ids children of \Robject{id} up to
+\Robject{rank} levels below \Robject{id}.
+
+<<eval=TRUE,echo=TRUE>>=
+EndNodeList()
+@
+
+<<eval=TRUE,echo=TRUE>>=
+MFendnode <- CustomEndNodeList("GO:0003674", rank=2)
+@
+
+<<eval=TRUE,echo=TRUE>>=
+res <- ontoCompare(affylist, probeType="hgu133a",
+endnode=MFendnode, goType="MF")
+@
+
+
+You can also create a
+list of GO ids of nodes of interest and pass it directly to the
+\Robject{endnode} argument in \Rfunction{ontoCompare}. GO ids must be in
+the following format:
+\mbox{"GO:\it{XXXXXXX}.}"\\
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+\begin{figure}[htpb]
+\begin{center}
+\begin{tabular}{cc}
+\includegraphics[width=3in,height=3in,angle=0]{ontoPlotEg1} &
+\includegraphics[width=3in,height=3in,angle=0]{ontoPlotEg2} \\
+(a) & (b)\\
+\end{tabular}
+\end{center}
+\caption{Plots obtained using \Rfunction{ontoCompare} on \Robject{probeID} dataset}
+\protect\label{fig:ontoPlotEg}
+\end{figure}
+
+\bibliography{marrayPacks}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+ 
