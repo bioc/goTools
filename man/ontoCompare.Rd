@@ -10,24 +10,25 @@
 \usage{
 
 ontoCompare(obj,  method=c("TGenes", "TIDS", "none"),
-            probeType=c("GONames", "GO", "operon", "hgu133a"), goType="All",
+            probeType=c("GO", "operon", "hgu133a"), goType="All",
             plot=FALSE,endnode, ...)
-
 
 ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
 }
 
 %- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{obj}{list of valid oligos ids.}
+  \item{obj}{list of valid probe ids.}
   \item{method}{method used to evaluate the percentage of oligos for
-    each end-node. 'TGenes' = number of oligo for a given
-    end-node/number total number of oligos (default). This includes
-    oligos not found in GO database. 'TIDS' = number of oligos for a
-    given end-node/number of oligos which have annotations only. 'none'
-    = percentage.}
-  \item{probeType}{type of input given to the function.}
-  \item{goType}{help sort the data by type. If 'ALL' (default), all oligos
+    each end-node. 'TGenes' = for each end node, return the number of direct
+  children found / total number of probe ids. (default). This includes
+    oligos which do not have GO annotations. 'TIDS' = for each end node,
+    return the number of direct children found / total number of GO ids
+    describing the list. 'none' = for each end node, return the number of direct
+    children found.}
+  \item{probeType}{type of input given to the function. ontoCompare is
+    expecting valid probe ids.}
+  \item{goType}{help sort the data by type. If 'All' (default), all oligos
     are taken into account. 'BP' restricts information
     to Biological Process, 'CC' to Cellular Component, and 'MF' to
     Molecular Function.}
@@ -49,7 +50,7 @@ ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
 
 
 \examples{
-# Examples use the probeID dataset. For description type ? probeID.
+# Examples use the probeID dataset. For description type ?probeID.
 data(probeID)
 
 ontoCompare(affylist, probeType="hgu133a", plot=TRUE)

@@ -3,7 +3,8 @@
 \alias{operonlist}
 
 
-\title{List of probe ids from Affymetrix hgu133a and Operon Version 2}
+\title{List of probe ids from Affymetrix hgu133a chip and Operon Version
+  2 Human oligos}
 
 \description{
   The \code{probeID} dataset consists of two lists of randomly chosen

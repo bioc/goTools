@@ -1,12 +1,12 @@
 #####################################################
 # Gotool.R
 #
-# Modified: March 17, 2004
+# Modified: March 24, 2004
 # Functions for description of oligos using Gene Ontology
 #
 # TO USE
 #
-# ontoCompare(list(id, id), method="TIDS", probeID="rgu34a", goType="BP", plot=TRUE)
+# ontoCompare(list(id, id), method="TIDS", probeType="rgu34a", goType="BP", plot=TRUE)
 #
 #####################################################
 
@@ -17,9 +17,11 @@
 # This function returns the GO category corresponding
 # to one id. Needs to be entered as "GO:0000000"
 
+require("annotate") || stop("annotate unavailable")
+
 getGoCategory <- function(id) {
-  
-  return(get(id, env=GOCATEGORY))
+  cat <- names(get(id, env=GOTERM))
+  return(cat)
 }
 
 #####################################################
@@ -30,13 +32,30 @@ getGOTerm <- function (num)
 {
   if (!nchar(num[1])) 
     return(list())
-  if (exists(num, GOBPID2TERM)) 
-    return(list(name = get(num, GOBPID2TERM), type = "Biological Process"))
-  if (exists(num, GOCCID2TERM)) 
-    return(list(name = get(num, GOCCID2TERM), type = "Cellular Component"))
-  if (exists(num, GOMFID2TERM)) 
-    return(list(name = get(num, GOMFID2TERM), type = "Molecular Function"))
+  if (exists(num, GOTERM))
+    {
+      res <- get(num, env=GOTERM)
+ 
+      if (names(res)== "BP") 
+        return(list(name = res[[1]], type = "Biological Process"))
+      if (names(res)== "CC") 
+        return(list(name = res[[1]], type = "Cellular Component"))
+      if(names(res) == "MF")
+        return(list(name = res[[1]], type = "Molecular Function"))
+    }
 }
+
+# getGOTerm <- function (num) 
+#{
+ # if (!nchar(num[1])) 
+ #   return(list())
+ # if (exists(num, GOBPID2TERM)) 
+ #   return(list(name = get(num, GOBPID2TERM), type = "Biological Process"))
+ # if (exists(num, GOCCID2TERM)) 
+ #   return(list(name = get(num, GOCCID2TERM), type = "Cellular Component"))
+ # if (exists(num, GOMFID2TERM)) 
+ #   return(list(name = get(num, GOMFID2TERM), type = "Molecular Function"))
+#}
 
 #####################################################
 # Function: getGOList
@@ -44,6 +63,7 @@ getGOTerm <- function (num)
 
 getGOList <- function(numvect, goType=c("All", "BP", "CC", "MF"))
 {
+  #print("in getGOList")
   ## numvect is a vector
   results <- NA
   if(!is.null(numvect))
@@ -177,6 +197,7 @@ isEndNode <- function(id, endnode) {
 
 getGOID <- function (x, probeType="operon") 
 {
+  #print("in getGOID")
   if(probeType == "operon")
     res <- getGO.operon(x)
   else
@@ -214,7 +235,8 @@ getGO.operon.main <- function(oligo, gotable)
     if (!setequal(ind, numeric(0))) {
       vect <- unlist(strsplit(as.character(gotable[ind,2]), split=" :: "))
       if(!is.null(vect)) vect <- gsub(" ", "", vect)
-      vv <- vect[vect %in% ls(GOCATEGORY)]
+      #vv <- vect[vect %in% ls(GOCATEGORY)]
+      vv <- vect[vect %in% ls(env = GOTERM)]
       vect <- vv
     }
     return(vect)
@@ -275,21 +297,25 @@ updateOligo2GO <- function(url)
 
 gowraper <- function(oligo, endnode, probeType)
   {
+   # print("in gowraper")
     if(missing(endnode))
       endnode <- EndNodeList()
 
     if(missing(probeType))
       probeType <- "operon"
-      
+
+    #print(paste("probType= ", probeType))
     goItmp <- getGOID(oligo, probeType=probeType)  ## goI is a list
-
+    #print("after getGOID")
     ## Check go exists in data base ## It should but version differences
-    FULLGOList <- ls(GOCATEGORY)
+    #FULLGOList <- ls(GOCATEGORY)
+    FULLGOList <- ls(env = GOTERM)
     goI <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
-
+    #print("got goI")
     ## Find parents
     results <- lapply(goI, parentsVectWraper, endnode)
-    
+
+    #print("end gowraper")
     return(results)
   }
 
@@ -313,6 +339,7 @@ parentsListWraper <- function(goI, endnode, listres = TRUE)
 
 parentsVectWraper <- function(goI, endnode)
   {
+    #print("in parentsVectWraper")
     ## input goI is a vect
     if(missing(endnode))
       endnode <- EndNodeList()
@@ -359,7 +386,7 @@ parentsVectWraper <- function(goI, endnode)
 ## probeType == "GONames" : We have GO description e.g. "transcription factor
 
 ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
-                         probeType=c("GONames", "GO"), goType="All", plot=FALSE,
+                         probeType=c("GO", "operon"), goType="All", plot=FALSE,
                          endnode, ...)
   {
 
@@ -371,17 +398,19 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
     ## We need to add GO, Mf, BP, CC in the list, to stop the recurrence
     endnode <- unique(c("GO:0003673","GO:0003674", "GO:0005575", "GO:0008150",endnode))
 
+    #print("ontoCompare 1")
     ## List of GO or list of oligo
-    if(probeType != "GONames")
-      {
-        if(probeType == "GO")
-          GOID <- obj
-        else
-          GOID <- lapply(obj, gowraper, endnode=endnode, probeType=probeType)
-        objlist <- lapply(GOID, function(x){lapply(x, getGOList, goType=goType)})
-      }
+   # if(probeType != "GONames")
+     # {
+    if(probeType == "GO")
+      GOID <- obj
     else
-      objlist <- obj
+      GOID <- lapply(obj, gowraper, endnode=endnode, probeType=probeType)
+    objlist <- lapply(GOID, function(x){lapply(x, getGOList, goType=goType)})
+        #print("ontoCompare 2")
+    #  }
+    #else
+    #  objlist <- obj
 
     ## List of GONames: Description
     
@@ -402,6 +431,7 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
     method <- method[1]
     if(length(obj) > 1)
       {
+        #print("ontoCompare 3")
         NotFoundGenes <-  unlist(lapply(obj, function(x){sum(is.na(unlist(x)))}))
         newobj <- lapply(obj, function(x){
           y <- lapply(x[!is.na(x)], function(x){unlist(x[1,])})

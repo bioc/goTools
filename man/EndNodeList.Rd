@@ -4,9 +4,9 @@
 
 \title{Reference GO nodes list.}
 \description{
-  The function \code{EndNodeList} builds the default nodes list used in
-  \code{"\link{ontoCompare}}}. CustomEndNodeList helps you build a list
-    of children nodes  starting from a GO id of interest. 
+  The function \code{EndNodeList} builds the default end node list used in
+  \code{\link{ontoCompare}}}. CustomEndNodeList helps you build a list
+    of children nodes starting from a GO id of interest. 
 }
 \usage{
 EndNodeList()
@@ -34,9 +34,9 @@ CustomEndNodeList(id,rank=1)
 
 \examples{
 # Examples use the probeID dataset. For description type ? probeID.
-data(probeID)
 library(GO)
 library(annotate)
+data(probeID)
 EndNodeList()
 
 MFendnode <- CustomEndNodeList("GO:0003674", rank=2)
