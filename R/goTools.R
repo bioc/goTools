@@ -54,7 +54,7 @@ getGOTerm <- function (num)
 
 getGOList <- function(numvect, goType=c("All", "BP", "CC", "MF"))
 {
-  #print("in getGOList")
+  ## print("in getGOList")
   ## numvect is a vector
   results <- NA
   if(!is.null(numvect))
@@ -296,16 +296,20 @@ gowraper <- function(oligo, endnode, probeType)
       probeType <- "operon"
 
     #print(paste("probType= ", probeType))
-    goItmp <- getGOID(oligo, probeType=probeType)  ## goI is a list
-    #print("after getGOID")
+    goItmp <- getGOID(oligo, probeType=probeType)
+    ## goItmp is a list of GO for each oligo ID
+
     ## Check go exists in data base ## It should but version differences
     #FULLGOList <- ls(GOCATEGORY)
-    FULLGOList <- ls(env = GOTERM)
+    FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
     goI <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
-    #print("got goI")
+    ## remove all the names that are not in GOTERM
+    
     ## Find parents
     results <- lapply(goI, parentsVectWraper, endnode)
-
+    ## List of vector: names(results) = oligo ID and each
+    ## vector represent the end node GO term. 
+    
     #print("end gowraper")
     return(results)
   }
@@ -389,20 +393,28 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
     ## We need to add GO, Mf, BP, CC in the list, to stop the recurrence
     endnode <- unique(c("GO:0003673","GO:0003674", "GO:0005575", "GO:0008150",endnode))
 
-    #print("ontoCompare 1")
     ## List of GO or list of oligo
-   # if(probeType != "GONames")
-     # {
+
     if(probeType == "GO")
-      GOID <- obj
+      {
+        GOID <- list()
+        for(i in obj)
+          {
+            goItmp <- i
+            FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
+            goI <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
+            ## remove all the names that are not in GOTERM
+            ## Find parents
+            GOID <- c(GOID, list(lapply(goI, parentsVectWraper, endnode)))
+          }
+        names(GOID) <- names(obj)
+      }
     else
       GOID <- lapply(obj, gowraper, endnode=endnode, probeType=probeType)
-    objlist <- lapply(GOID, function(x){lapply(x, getGOList, goType=goType)})
-        #print("ontoCompare 2")
-    #  }
-    #else
-    #  objlist <- obj
 
+    ## GOID = GO 
+    objlist <- lapply(GOID, function(x){lapply(x, getGOList, goType=goType)})
+   
     ## List of GONames: Description
 
     res <- ontoCompare.main(objlist, method = method[1])

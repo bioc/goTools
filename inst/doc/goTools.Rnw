@@ -9,8 +9,9 @@
 \documentclass[11pt]{article}
 
 \usepackage{amsmath,epsfig,fullpage}%,psfig,pstricks
-\usepackage[authoryear,round]{natbib}
+%\usepackage[authoryear,round]{natbib}
 \usepackage{hyperref}
+\usepackage{Sweave}
 
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
@@ -18,7 +19,7 @@
 
 \parindent 0in
 
-\bibliographystyle{abbrvnat}
+%\bibliographystyle{abbrvnat}
 
 \begin{document}
 
@@ -44,8 +45,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Getting started}
 
-This  document provides a tutorial for the \Rpackage{goTools} package, which
-allow graphical comparisons of functional groups between two sets of
+This document provides a tutorial for the \Rpackage{goTools} package, which
+allows graphical comparisons of functional groups between two sets of
 genes.
 
 \paragraph{Installing the package:}
@@ -69,8 +70,8 @@ description of the experiments and data, type {\tt ?probeID}.
 
 \paragraph{Sweave:}
 This document was generated using the \Rfunction{Sweave}
-function from the R \Rpackage{ tools} package. The source file is in the
-{\tt /inst/doc} directory of the package \Rpackage{goTools}. 
+function from the R \Rpackage{tools} package. The source file is in the
+{\tt /inst.doc} directory of the package \Rpackage{goTools}. 
 
 \paragraph{}
 To begin, let's load the package and the probeID datasets into your R
@@ -81,11 +82,11 @@ data(probeID)
 ls()
 @
 
-As shown below, \Robject{affylist} is a list containing 3 vectorsof
+As shown below, \Robject{affylist} is a list containing 3 vectors of
 probe ids from Affymetrix hgu133a chip, and \Robject{operonlist} is a
 list of 2 vectors of probe ids from Operon Version 2 Human oligos. 
 
-<<eval=TRUE>>=
+<<eval=TRUE, echo=TRUE>>=
 class(affylist)
 length(affylist)
 affylist[[1]][1:5]
@@ -106,14 +107,14 @@ Gene Ontology is a Direct Acyclic Graph (DAG) that provides three structured
  molecular functions and is used in one or more biological processes; it
  might be associated with one or more cellular components. To learn more
  about GO and DAG, please refer to Gene Ontology web site
- \url(http://www.geneontology.org/).\\
+ \url{http://www.geneontology.org/}.\\
 
 We have created a set of R functions that use GO structure to describe and
 compare the composition of sets of genes (or probes). We use the
 following algorithm:\\
 
 \begin{enumerate}
-\item{Read in a \bf{list} of sets of probe id you want to compare.}
+\item{Read in a {\bf list} of sets of probe id you want to compare.}
 \item{Map each probe id to corresponding ontologies in the GO tree, if any.}
 \item{Create the set of GO ids of interest used to compare your
 datasets (\Robject{endnode}). The function \Rfunction{EndNodeList()}
@@ -201,7 +202,7 @@ method="TIDS",plot=FALSE)
 ontoPlot(res2, cex=0.7)
 @
 
-See Figure \ref{fig:ontoPlotEg}
+%See Figure \ref{fig:ontoPlotEg}
 
 \section{How to set up the "end nodes"}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,7 +252,7 @@ the following format:
 
 
 
-\begin{figure}[htpb]
+\begin{figure} %[htpb]
 \begin{center}
 \begin{tabular}{cc}
 \includegraphics[width=3in,height=3in,angle=0]{ontoPlotEg1} &
@@ -263,7 +264,7 @@ the following format:
 \protect\label{fig:ontoPlotEg}
 \end{figure}
 
-\bibliography{marrayPacks}
+%\bibliography{marrayPacks}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}

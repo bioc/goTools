@@ -1,6 +1,6 @@
 Package: goTools
-Version: 1.0.3
-Date: 2004-10-18
+Version: 1.0.5
+Date: 2005-01-18
 Title: Functions for Gene Ontology database
 Depends:  Biobase, annotate, GO 
 Suggests: hgu133a
