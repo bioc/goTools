@@ -27,32 +27,32 @@ getGoCategory <- function(id) {
 # Function: getGOTerm
 #####################################################
 
-getGOTerm <- function (num)
+getGOTerm <- function (num) 
 {
-  if (!nchar(num[1]))
+  if (!nchar(num[1])) 
     return(list())
   if (exists(num, GOTERM))
     {
       res <- get(num, env=GOTERM)
-
-      if (names(res)== "BP")
+ 
+      if (names(res)== "BP") 
         return(list(name = res[[1]], type = "Biological Process"))
-      if (names(res)== "CC")
+      if (names(res)== "CC") 
         return(list(name = res[[1]], type = "Cellular Component"))
       if(names(res) == "MF")
         return(list(name = res[[1]], type = "Molecular Function"))
     }
 }
 
-# getGOTerm <- function (num)
+# getGOTerm <- function (num) 
 #{
- # if (!nchar(num[1]))
+ # if (!nchar(num[1])) 
  #   return(list())
- # if (exists(num, GOBPID2TERM))
+ # if (exists(num, GOBPID2TERM)) 
  #   return(list(name = get(num, GOBPID2TERM), type = "Biological Process"))
- # if (exists(num, GOCCID2TERM))
+ # if (exists(num, GOCCID2TERM)) 
  #   return(list(name = get(num, GOCCID2TERM), type = "Cellular Component"))
- # if (exists(num, GOMFID2TERM))
+ # if (exists(num, GOMFID2TERM)) 
  #   return(list(name = get(num, GOMFID2TERM), type = "Molecular Function"))
 #}
 
@@ -97,7 +97,7 @@ goParents <- function(id) {
   cat <- getGoCategory(id)
   if (cat == "GO")
     stop("We have reached the top node of the GO tree")
-  else
+  else 
     {
       envi <- get(paste("GO", cat, "PARENTS", sep=""),
                   envir=as.environment("package:GO"))
@@ -169,7 +169,7 @@ CustomEndNodeList <- function(id,rank=1){
 #  Input is a list or vector, output a vect
 ## Assume all GO are in the metadata
 parentsList <- function(vect) {
-  if(is.list(vect))
+  if(class(vect) == "list")
     pars <- lapply(vect, sapply, goParents)
   else
     pars <- sapply(vect, goParents)
@@ -187,14 +187,14 @@ isEndNode <- function(id, endnode) {
   if(missing(endnode))
     endnode <- EndNodeList()
   return(is.element(id, endnode))
-
+  
 }
 
 #####################################################
 # Function: goId
 #####################################################
 
-getGOID <- function (x, probeType="operon")
+getGOID <- function (x, probeType="operon") 
 {
   #print("in getGOID")
   if(probeType == "operon")
@@ -228,7 +228,7 @@ getGO.operon <- function(oligo, gotableinput)
 getGO.operon.main <- function(oligo, gotable)
   {
     vect <- NA
-    #print("there")
+    #print("there")	
     ind <- grep(oligo, as.character(gotable[,1]))
     #print("there 2")
     if (!setequal(ind, numeric(0))) {
@@ -322,7 +322,7 @@ gowraper <- function(oligo, endnode, probeType)
 ## Function parentsListWraper
 #################################################
 ## Given a list of GO ids and a list of GO endnodes,
-## returns the GO endnodes parents of the GO ids
+## returns the GO endnodes parents of the GO ids 
 
 parentsListWraper <- function(goI, endnode, listres = TRUE)
   {
@@ -342,7 +342,7 @@ parentsVectWraper <- function(goI, endnode)
     ## input goI is a vect
     if(missing(endnode))
       endnode <- EndNodeList()
-
+    
     if(is.null(goI))
       {
         results <- NA
@@ -374,7 +374,7 @@ parentsVectWraper <- function(goI, endnode)
 
 
 #################################################
-## Function
+## Function 
 #################################################
 ## Given oligo ids, return percentage of each
 ## end-node, and the % of gene without annotations
@@ -412,7 +412,7 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
     #  objlist <- obj
 
     ## List of GONames: Description
-
+    
     res <- ontoCompare.main(objlist, method = method[1])
 
     if(plot)
@@ -435,22 +435,22 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
         newobj <- lapply(obj, function(x){
           y <- lapply(x[!is.na(x)], function(x){unlist(x[1,])})
           table(unlist(y))})
-
+        
         print("Number of lists > 1")
         x <- unique(unlist(lapply(newobj, function(x){return(names(x))})))
         newM <- matrix(0, ncol=length(x) + 1, nrow=length(newobj))
         colnames(newM) <- c(x, "NotFound")
         newM[,length(x) + 1] <- NotFoundGenes
-
+        
         if(is.null(names(obj)))
           rownames(newM) <- as.character(1:length(obj))
         else
           rownames(newM) <- names(obj)
-
-        ## Enter probeType
+        
+        ## Enter probeType  
         for(i in 1:length(newobj))
           {
-            newM[i, names(newobj[[i]])] <- newobj[[i]]
+            newM[i, names(newobj[[i]])] <- newobj[[i]] 
           }
       }
     else
@@ -462,7 +462,7 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
         rownames(newM) <- "1"
         colnames(newM) <- c(names(xx), "NotFound")
       }
-
+        
     print(paste("Using method:",method[1]))
     if(method == "TGenes")
       {
@@ -478,4 +478,4 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
       res <- newM
     return(res)
   }
-
+ 
