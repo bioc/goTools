@@ -5,7 +5,7 @@
 \title{Reference GO nodes list.}
 \description{
   The function \code{EndNodeList} builds the default end node list used in
-  \code{\link{ontoCompare}}}. CustomEndNodeList helps you build a list
+  \code{\link{ontoCompare}}. \code{CustomEndNodeList} helps you build a list
     of children nodes starting from a GO id of interest. 
 }
 \usage{

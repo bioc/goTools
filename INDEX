@@ -1,28 +1,5 @@
-getGoCategory		Return the GO category corresponding to the
-			given oligo id
-getGOTerm		Mappings between Gene Ontology ids and the
-			corresponding GO terms
-getGOList		Return GO terms associated with a list of GO ids
-goParents		Return all GO parents for a given GO id
-EndNodeList		Return all GO end-nodes right before MF, BP, CC
-			in the GO tree
-goChildren		Return all children of a GO id
-CustomEndNodeList	Create end-node list with all end-nodes from top
-			to rank in the GO tree 
-parentsList		Return a list of parents GO ids for given GO ids
-isEndNode		Test if a GO id is in the end-node look-up table
-getGOID			Convert oligo id to GO id
-getGO.operon
-getGO.operon.main
-ontoPlot		Plot function specific to results from ontoCompare
-updateOligo2GO		Retrieve annotations maintained by Sandler
-			Genomics Core Facility
-gowraper		Return GO tree end-nodes associated with a GO id
-parentsListWraper	Returns GO end-nodes corresponding to given GO
-			ids list    
-parentsVectWraper	Returns GO end-nodes corresponding to given GO
-			ids vector
-ontoCompare		Wraper function. Given oligo ids, return the
-			percentage of genes under each end-node and the
-			percentage of genes without annotations
-ontoCompare.main
+affylist                List of probe ids from Affymetrix hgu133a chip
+                        and Operon Version 2 Human oligos
+EndNodeList             Reference GO nodes list.
+getGoCategory           Internal goTools functions
+ontoCompare             Wrapper functions
