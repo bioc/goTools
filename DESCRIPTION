@@ -7,3 +7,5 @@ Author: Yee Hwa (Jean) Yang <jean@biostat.ucsf.edu>, Agnes Paquet <apaquet@medsf
 Maintainer: Agnes Paquet <apaquet@medsfgh.ucsf.edu>
 Description: Wraper functions for description/comparison of oligo ID list using Gene Ontology database 
 License: GPL2
+ReleaseLevel: devel
+
