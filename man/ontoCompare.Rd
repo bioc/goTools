@@ -51,6 +51,8 @@ ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
 
 \examples{
 # Examples use the probeID dataset. For description type ?probeID.
+library(GO)
+library(annotate)
 data(probeID)
 
 ontoCompare(affylist, probeType="hgu133a", plot=TRUE)

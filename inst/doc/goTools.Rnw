@@ -142,6 +142,8 @@ The following examples demonstrate how to use \Rfunction{ontoCompare} on the
 
 
 <<eval=TRUE,echo=TRUE>>=
+library(GO)
+library(annotate)
 res <-ontoCompare(affylist, probeType="hgu133a")
 res[,1:2]
 @

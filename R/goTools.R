@@ -17,7 +17,6 @@
 # This function returns the GO category corresponding
 # to one id. Needs to be entered as "GO:0000000"
 
-require("annotate") || stop("annotate unavailable")
 
 getGoCategory <- function(id) {
   cat <- names(get(id, env=GOTERM))
