@@ -281,7 +281,7 @@ updateOligo2GO <- function(url)
   {
     cat("Downloading Oligo 2 GO annotation table ...")
     if(missing(url))
-      url <- "http://sandler-fgcf.ucsf.edu/download/GO-IDs"
+      url <- "http://arrays.ucsf.edu/download/GO-IDs"
     gotable <- read.table(url, header=TRUE, sep="\t", fill=TRUE)
     ind <- match(unique(gotable[,1]), gotable[,1])
     gotable <- gotable[ind,]
