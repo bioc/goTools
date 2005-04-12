@@ -1,7 +1,7 @@
 #####################################################
 # Gotools.R
 #
-# Modified: October 18, 2004
+# Modified: April 11, 2005
 # Functions for description of oligos using Gene Ontology
 #
 # TO USE
@@ -161,11 +161,12 @@ CustomEndNodeList <- function(id,rank=1){
 #  Input is a list or vector, output a vect
 ## Assume all GO are in the metadata
 parentsList <- function(vect) {
+  
   if(is.list(vect))
     pars <- lapply(vect, sapply, goParents)
   else
     pars <- sapply(vect, goParents)
-
+    
   pars <- unlist(pars)
   return(as.vector(pars))
 }
@@ -211,9 +212,19 @@ getGO.operon <- function(oligo, gotableinput)
       gotable <- gotableinput
     #print("here")
     print(dim(gotable))#not doing anything?  Mainly for debug
-
     res <- lapply(oligo, getGO.operon.main, gotable=gotable)
     names(res) <- oligo
+
+    index <- sapply(res, function(z) {
+      if(length(z)==1)
+        {
+          if(is.na(z)) return(FALSE)
+          else return(TRUE)
+        }
+      else return(TRUE)
+    })
+    res <- res[index]
+                  
     return(res)
   }
 
@@ -227,7 +238,7 @@ getGO.operon.main <- function(oligo, gotable)
       vect <- unlist(strsplit(as.character(gotable[ind,2]), split=" :: "))
       if(!is.null(vect)) vect <- gsub(" ", "", vect)
       #vv <- vect[vect %in% ls(GOCATEGORY)]
-      vv <- vect[vect %in% ls(env = GOTERM)]
+      vv <- vect[vect %in% ls(env = GOTERM) & !is.na(sapply(vect,getGoCategory))]
       vect <- vv
     }
     return(vect)
@@ -302,7 +313,7 @@ gowraper <- function(oligo, endnode, probeType)
     ## Check go exists in data base ## It should but version differences
     #FULLGOList <- ls(GOCATEGORY)
     FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
-    goI <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
+    goI <- lapply(goItmp, function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
     ## remove all the names that are not in GOTERM
     
     ## Find parents
@@ -402,7 +413,8 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
           {
             goItmp <- i
             FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
-            goI <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
+            goI <- lapply(goItmp,
+                          function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
             ## remove all the names that are not in GOTERM
             ## Find parents
             GOID <- c(GOID, list(lapply(goI, parentsVectWraper, endnode)))
@@ -410,8 +422,9 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
         names(GOID) <- names(obj)
       }
     else
-      GOID <- lapply(obj, gowraper, endnode=endnode, probeType=probeType)
-
+      {
+        GOID <- lapply(obj, gowraper, endnode=endnode, probeType=probeType)
+    }
     ## GOID = GO 
     objlist <- lapply(GOID, function(x){lapply(x, getGOList, goType=goType)})
    

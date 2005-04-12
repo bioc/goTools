@@ -3,7 +3,8 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{goTools overview}
-% \VignetteDepends{tools, annotate, GO, hgu133a }
+% \VignetteDepends{tools, annotate, GO}
+% \VignetteSuggest{hgu133a}
 % \VignetteKeywords{Gene Ontology}
 % \VignettePackage{goTools}
 \documentclass[11pt]{article}
@@ -37,7 +38,8 @@
 
 % library(tools)
 % setwd("c:/MyDoc/Projects/Jean/CVS/goTools/inst/doc")
-% Rnwfile<- file.path("c:/MyDoc/Projects/Jean/CVS/goTools/inst/doc","goTools.Rnw")
+% setwd("c:/MyDoc/Projects/madman/Rpacks/goTools/inst/doc")
+% Rnwfile<- file.path("c:/MyDoc/Projects/madman/Rpacks/goTools/inst/doc","goTools.Rnw")
 % Sweave(Rnwfile,pdf=TRUE,eps=TRUE,stylepath=TRUE,driver=RweaveLatex())
 
 \tableofcontents
