@@ -18,11 +18,11 @@
 # to one id. Needs to be entered as "GO:0000000"
 
 
-
 getGoCategory <- function(id) {
   cat <- Ontology(get(id, env=GOTERM))
   return(cat)
 }
+
 
 #####################################################
 # Function: getGOTerm
@@ -129,9 +129,16 @@ goChildren <- function(id) {
     {
       envi <- get(paste("GO", cat, "CHILDREN", sep=""),
                   envir=as.environment("package:GO"))
-      res <- get(id, env=envi)
-      return(res[!is.na(res)])
+      if (id %in% ls(env=envi))
+        {
+          res <- get(id, env=envi)
+          return(res[!is.na(res)])
+        }
+      else
+        return(NA)
     }
+  else
+    return(NA)
 }
 
 
@@ -238,8 +245,9 @@ getGO.operon.main <- function(oligo, gotable)
       vect <- unlist(strsplit(as.character(gotable[ind,2]), split=" :: "))
       if(!is.null(vect)) vect <- gsub(" ", "", vect)
       #vv <- vect[vect %in% ls(GOCATEGORY)]
-      vv <- vect[vect %in% ls(env = GOTERM) & !is.na(sapply(vect,getGoCategory))]
-      vect <- vv
+      vv <- vect[vect %in% ls(env = GOTERM)]
+      vv2 <- vv[!is.na(sapply(vv,getGoCategory))]
+      vect <- vv2
     }
     return(vect)
   }
@@ -313,7 +321,11 @@ gowraper <- function(oligo, endnode, probeType)
     ## Check go exists in data base ## It should but version differences
     #FULLGOList <- ls(GOCATEGORY)
     FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
-    goI <- lapply(goItmp, function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
+
+    goItmp2 <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
+    goI <- lapply(goItmp2, function(x){x[!is.na(sapply(x,getGoCategory))]})
+
+    #goI <- lapply(goItmp, function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
     ## remove all the names that are not in GOTERM
     
     ## Find parents
@@ -413,8 +425,11 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
           {
             goItmp <- i
             FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
-            goI <- lapply(goItmp,
-                          function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
+            goItmp2 <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
+            goI <- lapply(goItmp2, function(x){x[!is.na(sapply(x,getGoCategory))]})
+
+            #goI <- lapply(goItmp,
+            #              function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
             ## remove all the names that are not in GOTERM
             ## Find parents
             GOID <- c(GOID, list(lapply(goI, parentsVectWraper, endnode)))
