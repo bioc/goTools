@@ -1,5 +1,5 @@
 Package: goTools
-Version: 1.1.0
+Version: 1.1.1
 Date: 2005-04-11
 Title: Functions for Gene Ontology database
 Depends: Biobase, annotate, GO
@@ -10,4 +10,4 @@ Maintainer: Agnes Paquet <apaquet@medsfgh.ucsf.edu>
 Description: Wraper functions for description/comparison of oligo ID
         list using Gene Ontology database
 License: GPL2
-
+SaveImage: yes
