@@ -1,5 +1,5 @@
 Package: goTools
-Version: 1.1.1
+Version: 1.2.0
 Date: 2005-04-11
 Title: Functions for Gene Ontology database
 Depends: Biobase, annotate, GO
