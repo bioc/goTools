@@ -14,6 +14,8 @@
 \usepackage{hyperref}
 %\usepackage{Sweave}
 
+
+
 \newcommand{\Robject}[1]{{\texttt{#1}}}
 \newcommand{\Rfunction}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{{\textit{#1}}}
