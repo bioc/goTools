@@ -155,6 +155,7 @@ CustomEndNodeList <- function(id,rank=1){
     {
       print(paste("rank=",i))
       cust <- unique(unlist(lapply(cust, goChildren)))
+      cust <- cust[!is.na(cust)]
       res <- c(res,cust)
     }
   return(unique(res))
