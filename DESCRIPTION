@@ -6,8 +6,8 @@ Depends: Biobase, annotate, GO
 Suggests: hgu133a
 biocViews: Microarray,GO,Visualization
 Author: Yee Hwa (Jean) Yang <jean@biostat.ucsf.edu>, Agnes Paquet
-        <apaquet@medsfgh.ucsf.edu>
-Maintainer: Agnes Paquet <apaquet@medsfgh.ucsf.edu>
+        <paquetagnes@yahoo.com>
+Maintainer: Agnes Paquet <paquetagnes@yahoo.com>
 Description: Wraper functions for description/comparison of oligo ID
         list using Gene Ontology database
 License: GPL2
