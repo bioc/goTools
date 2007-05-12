@@ -11,4 +11,4 @@ Maintainer: Agnes Paquet <paquetagnes@yahoo.com>
 Description: Wraper functions for description/comparison of oligo ID
         list using Gene Ontology database
 License: GPL2
-SaveImage: yes
+LazyLoad: yes
