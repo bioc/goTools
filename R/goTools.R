@@ -490,7 +490,9 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
       {
         print("Number of lists = 1")
         obj2 <- obj[[1]]
-        xx <- table(unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
+        tmp <- unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
+##        xx <- table(unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
+        xx <- 
         newM <- matrix(c(xx, sum(is.na(unlist(obj2)))), nrow=1)
         rownames(newM) <- "1"
         colnames(newM) <- c(names(xx), "NotFound")
