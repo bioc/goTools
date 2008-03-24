@@ -1,5 +1,0 @@
-affylist                List of probe ids from Affymetrix hgu133a chip
-                        and Operon Version 2 Human oligos
-EndNodeList             Reference GO nodes list.
-getGoCategory           Internal goTools functions
-ontoCompare             Wrapper functions
