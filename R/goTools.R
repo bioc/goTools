@@ -54,7 +54,6 @@ getGOTerm <- function (num)
 
 getGOList <- function(numvect, goType=c("All", "BP", "CC", "MF"))
 {
-  ## print("in getGOList")
   ## numvect is a vector
   results <- NA
   if(!is.null(numvect))
@@ -108,7 +107,7 @@ goParents <- function(id) {
 # as a look-up vector
 
 EndNodeList <- function() {
-MFendnode <- get("GO:0003674", env=GOMFCHILDREN)
+  MFendnode <- get("GO:0003674", env=GOMFCHILDREN)
   CCendnode <- get("GO:0005575", env=GOCCCHILDREN)
   BPendnode <- get("GO:0008150", env=GOBPCHILDREN)
   EndNodeList <- c("GO:0003674", "GO:0005575", "GO:0008150",
@@ -123,7 +122,7 @@ MFendnode <- get("GO:0003674", env=GOMFCHILDREN)
 # BUG FIX Jean: don't need to check for the top node for this function
 
 goChildren <- function(id) {
-## Assume id is valid.
+  ## Assume id is valid.
   cat <- getGoCategory(id)
   if(!is.na(id) & !setequal(cat, "GO"))
     {
@@ -153,7 +152,7 @@ CustomEndNodeList <- function(id,rank=1){
   res <- numeric(0)
   for(i in 1:rank)
     {
-      print(paste("rank=",i))
+      cat(paste("rank=",i,"\n"))
       cust <- unique(unlist(lapply(cust, goChildren)))
       cust <- cust[!is.na(cust)]
       res <- c(res,cust)
@@ -169,7 +168,6 @@ CustomEndNodeList <- function(id,rank=1){
 #  Input is a list or vector, output a vect
 ## Assume all GO are in the metadata
 parentsList <- function(vect) {
-  
   if(is.list(vect))
     pars <- lapply(vect, sapply, goParents)
   else
@@ -197,7 +195,6 @@ isEndNode <- function(id, endnode) {
 
 getGOID <- function (x, probeType="operon")
 {
-  #print("in getGOID")
   if(probeType == "operon")
     res <- getGO.operon(x)
   else
@@ -218,7 +215,6 @@ getGO.operon <- function(oligo, gotableinput)
 
     if(!missing(gotableinput))
       gotable <- gotableinput
-    #print("here")
     print(dim(gotable))#not doing anything?  Mainly for debug
     res <- lapply(oligo, getGO.operon.main, gotable=gotable)
     names(res) <- oligo
@@ -239,9 +235,7 @@ getGO.operon <- function(oligo, gotableinput)
 getGO.operon.main <- function(oligo, gotable)
   {
     vect <- NA
-    #print("there")
     ind <- grep(oligo, as.character(gotable[,1]))
-    #print("there 2")
     if (!setequal(ind, numeric(0))) {
       vect <- unlist(strsplit(as.character(gotable[ind,2]), split=" :: "))
       if(!is.null(vect)) vect <- gsub(" ", "", vect)
@@ -308,14 +302,12 @@ updateOligo2GO <- function(url)
 
 gowraper <- function(oligo, endnode, probeType)
   {
-   # print("in gowraper")
     if(missing(endnode))
       endnode <- EndNodeList()
 
     if(missing(probeType))
       probeType <- "operon"
 
-    #print(paste("probType= ", probeType))
     goItmp <- getGOID(oligo, probeType=probeType)
     ## goItmp is a list of GO for each oligo ID
 
@@ -334,7 +326,6 @@ gowraper <- function(oligo, endnode, probeType)
     ## List of vector: names(results) = oligo ID and each
     ## vector represent the end node GO term. 
     
-    #print("end gowraper")
     return(results)
   }
 
@@ -358,7 +349,6 @@ parentsListWraper <- function(goI, endnode, listres = TRUE)
 
 parentsVectWraper <- function(goI, endnode)
   {
-    #print("in parentsVectWraper")
     ## input goI is a vect
     if(missing(endnode))
       endnode <- EndNodeList()
@@ -409,7 +399,7 @@ ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
                          endnode, ...)
   {
 
-    print("Starting ontoCompare...")
+    cat("Starting ontoCompare...\n")
     probeType <- probeType[1]
     if(missing(endnode))
       endnode <- EndNodeList()
@@ -463,13 +453,12 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
     method <- method[1]
     if(length(obj) > 1)
       {
-        #print("ontoCompare 3")
         NotFoundGenes <-  unlist(lapply(obj, function(x){sum(is.na(unlist(x)))}))
         newobj <- lapply(obj, function(x){
           y <- lapply(x[!is.na(x)], function(x){unlist(x[1,])})
           table(unlist(y))})
 
-        print("Number of lists > 1")
+        cat("Number of lists > 1\n")
         x <- unique(unlist(lapply(newobj, function(x){return(names(x))})))
         newM <- matrix(0, ncol=length(x) + 1, nrow=length(newobj))
         colnames(newM) <- c(x, "NotFound")
@@ -488,17 +477,15 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
       }
     else
       {
-        print("Number of lists = 1")
+        cat("Number of lists = 1\n")
         obj2 <- obj[[1]]
-        tmp <- unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
-##        xx <- table(unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
-        xx <- 
-        newM <- matrix(c(xx, sum(is.na(unlist(obj2)))), nrow=1)
+        xx <- table(unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
+        newM <- matrix(c(xx, "NotFound" = sum(is.na(unlist(obj2)))), nrow=1)
         rownames(newM) <- "1"
         colnames(newM) <- c(names(xx), "NotFound")
       }
 
-    print(paste("Using method:",method[1]))
+    cat(paste("Using method:",method[1],"\n"))
     if(method == "TGenes")
       {
         TGenes <- unlist(lapply(obj, length))
@@ -513,4 +500,3 @@ ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
       res <- newM
     return(res)
   }
-
