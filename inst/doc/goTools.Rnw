@@ -9,7 +9,7 @@
 % \VignettePackage{goTools}
 \documentclass[11pt]{article}
 
-\usepackage{amsmath,epsfig,fullpage}%,psfig,pstricks
+\usepackage{amsmath,epsfig,fullpage}
 %\usepackage[authoryear,round]{natbib}
 \usepackage{hyperref}
 
