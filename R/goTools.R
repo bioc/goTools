@@ -1,110 +1,145 @@
-#####################################################
-# Gotools.R
-#
-# Modified: April 11, 2005
-# Functions for description of oligos using Gene Ontology
-#
-# TO USE
-#
-# ontoCompare(list(id, id), method="TIDS", probeType="rgu34a", goType="BP", plot=TRUE)
-#
-#####################################################
+######################
+## New version of goTools function compatible with
+## new version of GO annotation package (GO.db)
+## Author: Agnes Paquet
+## Date: October 4, 2008
 
 
-#####################################################
-# Function: getGOCategory
-#####################################################
-# This function returns the GO category corresponding
-# to one id. Needs to be entered as "GO:0000000"
+##source("C:/MyDoc/Projects/madman/Rpacks-devel/goTools/R/goTools_V3.R")
+## library(GO.db)
+## 
+
+ontoCompare <- function(genelist,probeType=c("GO","hgu133a"),goType="All",
+                        endnode, method=c("TGenes","TIDS","none"),plot=FALSE,...)
+  {
+    cat("Starting ontoCompare...\n")
+    probeType <- probeType[1]
+    if(missing(endnode))
+      endnode <- EndNodeList()
+    else
+       endnode <- unique(c("GO:0003673","GO:0003674", "GO:0005575", "GO:0008150",
+                           endnode))
+
+    if(missing(method))
+      method <- "TGenes"
+    else
+      method <- method[1]
+
+    FullGOenv <- as.list(GOTERM)
+    if (probeType!="GO")
+      {
+        ## Convert the probe ids to GO
+        golist <- lapply(genelist,getGOID,probeType=probeType)
+      }
+
+    else
+      {
+        golist <- genelist
+      }
+
+    golistOK <- c()
+    for(i in 1:length(golist))
+          {
+            tmp <- golist[[i]]
+            tmp2 <- lapply(tmp,function(x){return(x[x %in% names(FullGOenv)])})
+            golistOK <- c(golistOK,list(tmp2))
+          }
+    
+    names(golistOK) <- names(golist)
+    
+    ##Now we have a list of list of goIds
+    ## Get the corresponding endnodes
+
+    parentsIDs <- c()
+    for(i in 1:length(golistOK))
+      {
+        tmp <- golistOK[[i]]
+        tmp2 <- lapply(tmp,parentsVectWraper,endnode)
+        parentsIDs <- c(parentsIDs, list(tmp2))
+      }
+    names(parentsIDs) <- names(golistOK)
+
+ 
+    finalParentsIDs <- c()
+    ## Keep only Ontology of interest as specified in goType
+    for(i in 1:length(parentsIDs))
+      {
+        tmp <- parentsIDs[[i]]
+        tmp2 <- lapply(tmp,getOntology,goType,FullGOenv)
+        finalParentsIDs <- c(finalParentsIDs,list(tmp2))
+      }
+
+    ## Reference endnode for the plot
+    refnode <- getOntology(endnode,goType,FullGOenv)
+    
+    ## Now that we have the mapping for the parents
+    ## Count how many
+
+    results <- ontoCompare.main(finalParentsIDs,method,refnode,FullGOenv)
+    if(plot)
+      ontoPlot(results,...)
+    return(results)
+  }
 
 
-getGoCategory <- function(id) {
-  cat <- Ontology(get(id, env=GOTERM))
-  return(cat)
-}
-
-
-#####################################################
-# Function: getGOTerm
-#####################################################
-
-getGOTerm <- function (num)
-{
-  if (!nchar(num[1]))
-    return(list())
-  if (exists(num, GOTERM))
-    {
-      res <- get(num, env=GOTERM)
-
-      if (Ontology(res)== "BP")
-        return(list(name = Term(res), type = "Biological Process"))
-      if (Ontology(res)== "CC")
-        return(list(name = Term(res), type = "Cellular Component"))
-      if(Ontology(res) == "MF")
-        return(list(name = Term(res), type = "Molecular Function"))
-    }
-}
-
-
-
-
-#####################################################
-# Function: getGOList
-#####################################################
-
-getGOList <- function(numvect, goType=c("All", "BP", "CC", "MF"))
-{
-  ## numvect is a vector
-  results <- NA
-  if(!is.null(numvect))
-    {
-      if(!is.na(numvect[1]))
-        {
-          res <- sapply(numvect, getGOTerm)
-          if(length(res) !=0)
-            {
-              goType <- goType[1]
-              if(goType=="All")
-                results <- res
-              if(goType=="BP")
-                results <- as.matrix(res[, unlist(res["type",]) == "Biological Process"])
-              if(goType=="CC")
-                results <- as.matrix(res[, unlist(res["type",]) == "Cellular Component"])
-              if(goType=="MF")
-                results <- as.matrix(res[, unlist(res["type",]) == "Molecular Function"])
-              if(ncol(results) == 0)
-                results <- NA
-            }}}
-  return(results)
-}
-
-#####################################################
-# Function goParents
-#####################################################
-#Given a GO id "GO:XXXXXX", returns its parents
-
-goParents <- function(id) {
-  ## Assume id is valid.
-  cat <- getGoCategory(id)
-  if (cat == "GO")
-    stop("We have reached the top node of the GO tree")
-  else
-    {
-      envi <- get(paste("GO", cat, "PARENTS", sep=""),
-                  envir=as.environment("package:GO"))
-      res <- get(id, env=envi)
-    }
-  return(res)
-}
+ontoCompare.main <- function(parentslist,method=c("TGenes","TIDS","none"),refnode,FullGOenv=NULL)
+  {
+    method <- method[1]
+    if(missing(FullGOenv))
+      FullGOenv <- as.list(GOTERM)
+    resmat <- c()
+    for(i in 1:length(parentslist))
+      {
+        tmp <- parentslist[[i]]
+        nb <- table(unlist(tmp))
+        index <- match(names(nb),refnode)
+        nas <- sum(is.na(unlist(tmp)))
+        nb <- c(nb,nas)
+        res <- rep(0,length(refnode)+1)
+        if(method=="TGenes")
+          {
+            den <- length(tmp)
+            res[c(index,length(res))] <- nb/den
+          }
+        if(method=="TIDS")
+          {
+            den <- length(unlist(tmp))
+            res[c(index,length(res))] <- nb/den
+          }
+        if(method=="none")
+          {
+            res[c(index,length(res))] <- nb
+          }
+        resmat <- cbind(resmat,res)
+      }
+    labs <- sapply(FullGOenv[refnode],Term)
+    rownames(resmat) <- c(labs,"NotFound")
+    colnames(resmat) <- names(parentslist)
+    ##return(resmat)
+    return( as.matrix(resmat[apply(resmat,1,function(x){sum(x)>0}),]))
+  }
 
 
 
-
-#####################################################
-# Function EndNodeList
-#####################################################
-# Returns the GO end-nodes before MF, BP, CC
-# as a look-up vector
+getOntology <- function(idvect,goType=c("All","BP","CC","MF"), FullGOenv)
+  {
+    if(is.na(idvect[1]))
+      {
+        return(NA)
+      }
+    else
+      {
+        goType=goType[1]
+        if(goType=="All")
+          return(idvect)
+        else
+          {
+            index <- match(idvect,names(FullGOenv))
+            cat <-  sapply(FullGOenv[index],Ontology)
+            return(idvect[cat==goType])
+          }
+      }
+  }
 
 EndNodeList <- function() {
   MFendnode <- get("GO:0003674", env=GOMFCHILDREN)
@@ -115,20 +150,113 @@ EndNodeList <- function() {
   return(EndNodeList)
 }
 
+## Take probe ids, return GO, for any available platform
+getGOID <- function (x, probeType="operon")
+{
+  if(probeType == "operon")
+    print("operon is not supperted")
+    ## nothing for now
+    ## res <- getGO.operon(x)
+  else
+    {
+      library(paste(probeType,".db",sep=""), character.only = TRUE)
+      GOenv <- get(paste(probeType, "GO", sep = ""))
+      tmp <- mget(x, env = GOenv)
+      res <- lapply(tmp, names)
+    }
+  return(res)
+}
+
+isEndNode <- function(id, endnode) {
+  if(missing(endnode))
+    endnode <- EndNodeList()
+  return(is.element(id, endnode))
+
+}
+
+parentsVectWraper <- function(goidvect,endnode)
+  {
+    if (is.null(goidvect))
+      {
+        results <- NA
+      }
+    else
+      {
+        results <- c()
+        test <- sapply(goidvect, isEndNode,endnode=endnode)
+        results <- c(results,goidvect[test]) ## Keep a list of the endnode we hit
+        var <- goidvect[!test]
+        while(length(var) !=0)
+          {
+            parents <- unlist(sapply(var,goParents))
+            test <- unlist(lapply(parents,isEndNode, endnode))
+            results <- c(results,parents[test])
+            var <- parents[!test]
+          }
+        if(length(results)==0)
+          results <- NA
+      }
+    return(unique(results))
+  }
+
+goParents <- function(goid)
+  {
+    cat <- Ontology(get(goid,GOTERM))
+    if(cat == "all")
+      {
+        stop("reach the top of the tree")
+      }
+    else
+      {
+        envi <- get(paste("GO",cat,"PARENTS",sep=""),
+                    env=as.environment("package:GO.db"))
+        res <- get(goid,env=envi)
+      }
+    return(res)
+  }
+
 #####################################################
-# Function goChildren
+# Function:ontoPlot
 #####################################################
-# Returns the children of a GO id
-# BUG FIX Jean: don't need to check for the top node for this function
+## Suppose we have a list  resultsing from getGOList
+
+ontoPlot <- function(objM,
+                     names.arg=NULL,
+                     beside=TRUE,
+                     las=2,
+                     legend.text=TRUE,
+                     ...)
+  {
+    ## obj <- results from ontoCompare
+    names.arg=rownames(objM)
+    if(ncol(objM) == 1)
+      pie(as.vector(objM[objM!=0]), labels=names.arg, ...)
+    else {
+      if(is.logical(legend.text))
+        {
+          if(legend.text)
+            legend.text <- colnames(objM)
+          else
+            legend.text <- NULL
+        }
+      x <- barplot(t(objM), col=rainbow(ncol(objM)), beside=beside, las=las,
+                   names.arg=names.arg,legend.text=legend.text, ...)
+      return(x)
+    }
+  }
+
+###########################################################
+## Other functions from previous veriosn of goTools
+## May not work...
 
 goChildren <- function(id) {
   ## Assume id is valid.
-  cat <- getGoCategory(id)
+  cat <- Ontology(get(id,GOTERM))
   if(!is.na(id) & !setequal(cat, "GO"))
     {
       envi <- get(paste("GO", cat, "CHILDREN", sep=""),
-                  envir=as.environment("package:GO"))
-      if (id %in% ls(env=envi))
+                  envir=as.environment("package:GO.db"))
+      if (id %in% names(as.list(envi)))
         {
           res <- get(id, env=envi)
           return(res[!is.na(res)])
@@ -139,6 +267,7 @@ goChildren <- function(id) {
   else
     return(NA)
 }
+
 
 
 #####################################################
@@ -159,344 +288,3 @@ CustomEndNodeList <- function(id,rank=1){
     }
   return(unique(res))
 }
-
-
-#####################################################
-# Function: parentsList
-#####################################################
-#  Returns a list of parents, given a list of Go ids
-#  Input is a list or vector, output a vect
-## Assume all GO are in the metadata
-parentsList <- function(vect) {
-  if(is.list(vect))
-    pars <- lapply(vect, sapply, goParents)
-  else
-    pars <- sapply(vect, goParents)
-    
-  pars <- unlist(pars)
-  return(as.vector(pars))
-}
-
-#####################################################
-# Function: isEndNode
-#####################################################
-#Test if a given id is in the look-up table
-
-isEndNode <- function(id, endnode) {
-  if(missing(endnode))
-    endnode <- EndNodeList()
-  return(is.element(id, endnode))
-
-}
-
-#####################################################
-# Function: goId
-#####################################################
-
-getGOID <- function (x, probeType="operon")
-{
-  if(probeType == "operon")
-    res <- getGO.operon(x)
-  else
-    {
-      library(probeType, character.only = TRUE)
-      GOenv <- get(paste(probeType, "GO", sep = ""))
-      tmp <- mget(x, env = GOenv)
-      res <- lapply(tmp, names)
-    }
-  return(res)
-}
-
-getGO.operon <- function(oligo, gotableinput)
-  {
-    if(missing(gotableinput))
-      if(!("gotable" %in% ls(1)))
-        assign("gotable", updateOligo2GO(), envir=.GlobalEnv)
-
-    if(!missing(gotableinput))
-      gotable <- gotableinput
-    print(dim(gotable))#not doing anything?  Mainly for debug
-    res <- lapply(oligo, getGO.operon.main, gotable=gotable)
-    names(res) <- oligo
-
-    index <- sapply(res, function(z) {
-      if(length(z)==1)
-        {
-          if(is.na(z)) return(FALSE)
-          else return(TRUE)
-        }
-      else return(TRUE)
-    })
-    res <- res[index]
-                  
-    return(res)
-  }
-
-getGO.operon.main <- function(oligo, gotable)
-  {
-    vect <- NA
-    ind <- grep(oligo, as.character(gotable[,1]))
-    if (!setequal(ind, numeric(0))) {
-      vect <- unlist(strsplit(as.character(gotable[ind,2]), split=" :: "))
-      if(!is.null(vect)) vect <- gsub(" ", "", vect)
-      #vv <- vect[vect %in% ls(GOCATEGORY)]
-      vv <- vect[vect %in% ls(env = GOTERM)]
-      vv2 <- vv[!is.na(sapply(vv,getGoCategory))]
-      vect <- vv2
-    }
-    return(vect)
-  }
-
-#####################################################
-# Function:goBarBarplot
-#####################################################
-## Suppose we have a list  resultsing from getGOList
-
-ontoPlot <- function(objM,
-                        beside=TRUE,
-                        las=2,
-                        legend.text=TRUE,
-                        ...)
-  {
-    ## obj <- results from ontoCompare
-    if(nrow(objM) == 1)
-      pie(as.vector(objM[objM!=0]), labels=colnames(objM), ...)
-    else {
-      if(is.logical(legend.text))
-        {
-          if(legend.text)
-            legend.text <- rownames(objM)
-          else
-            legend.text <- NULL
-        }
-      x <- barplot(objM, col=rainbow(nrow(objM)), beside=beside, las=las,
-                   legend.text=legend.text, ...)
-      return(x)
-    }
-  }
-
-
-#####################################################
-# Function: updateOligo2GO
-#####################################################
-## Function to pull annotations from the web site
-
-## Still reloading the table each time,
-## unless you save it to the env before
-updateOligo2GO <- function(url)
-  {
-    cat("Downloading Oligo 2 GO annotation table ...")
-    if(missing(url))
-      url <- "http://arrays.ucsf.edu/download/GO-IDs"
-    gotable <- read.table(url, header=TRUE, sep="\t", fill=TRUE)
-    ind <- match(unique(gotable[,1]), gotable[,1])
-    gotable <- gotable[ind,]
-    cat("done.\n")
-    return(gotable)
-  }
-
-#################################################
-## Function gowraper
-#################################################
-## Given oligo id, returns its end-nodes
-
-gowraper <- function(oligo, endnode, probeType)
-  {
-    if(missing(endnode))
-      endnode <- EndNodeList()
-
-    if(missing(probeType))
-      probeType <- "operon"
-
-    goItmp <- getGOID(oligo, probeType=probeType)
-    ## goItmp is a list of GO for each oligo ID
-
-    ## Check go exists in data base ## It should but version differences
-    #FULLGOList <- ls(GOCATEGORY)
-    FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
-
-    goItmp2 <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
-    goI <- lapply(goItmp2, function(x){x[!is.na(sapply(x,getGoCategory))]})
-
-    #goI <- lapply(goItmp, function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
-    ## remove all the names that are not in GOTERM
-    
-    ## Find parents
-    results <- lapply(goI, parentsVectWraper, endnode)
-    ## List of vector: names(results) = oligo ID and each
-    ## vector represent the end node GO term. 
-    
-    return(results)
-  }
-
-#################################################
-## Function parentsListWraper
-#################################################
-## Given a list of GO ids and a list of GO endnodes,
-## returns the GO endnodes parents of the GO ids
-
-parentsListWraper <- function(goI, endnode, listres = TRUE)
-  {
-    ## input goI is a list
-    if(missing(endnode))
-      endnode <- EndNodeList()
-    results <- lapply(goI, parentsVectWraper, endnode)
-    if(listres)
-      return(results)
-    else
-      return(unique(unlist(results)))
-  }
-
-parentsVectWraper <- function(goI, endnode)
-  {
-    ## input goI is a vect
-    if(missing(endnode))
-      endnode <- EndNodeList()
-
-    if(is.null(goI))
-      {
-        results <- NA
-      }
-    else
-      {
-        if(!is.na(goI[1]))
-          {
-            results <- NULL
-            test <- sapply(goI, isEndNode, endnode=endnode)
-            results <-  c(results, goI[test])
-            var <- goI[!test]
-            while (length(var) != 0)
-               {
-                 parents <- parentsList(var)
-                 test <- unlist(lapply(parents, isEndNode, endnode))
-                 results <- c(results, parents[test])
-                 var <- parents[!test]
-               }
-            if(is.null(results)) results <- NA
-          }
-        else
-          {
-            results <- NA
-          }
-      }
-    return(unique(results))
-  }
-
-
-#################################################
-## Function
-#################################################
-## Given oligo ids, return percentage of each
-## end-node, and the % of gene without annotations
-## data describe our object.  It can be
-## probeType == "operon": List of operon ID
-## probeType == "hgu133a" : List of Affy ID from chip hgu133a
-## probeType == "GO" : we have GO ids e.g. GO:xxxxxx
-## probeType == "GONames" : We have GO description e.g. "transcription factor
-
-ontoCompare  <- function(obj,  method=c("TGenes", "TIDS", "none"),
-                         probeType=c("GO", "operon"), goType="All", plot=FALSE,
-                         endnode, ...)
-  {
-
-    cat("Starting ontoCompare...\n")
-    probeType <- probeType[1]
-    if(missing(endnode))
-      endnode <- EndNodeList()
-
-    ## We need to add GO, Mf, BP, CC in the list, to stop the recurrence
-    endnode <- unique(c("GO:0003673","GO:0003674", "GO:0005575", "GO:0008150",endnode))
-
-    ## List of GO or list of oligo
-
-    if(probeType == "GO")
-      {
-        GOID <- list()
-        for(i in obj)
-          {
-            goItmp <- i
-            FULLGOList <- ls(env = GOTERM)  ## List of all GOTERM
-            goItmp2 <- lapply(goItmp, function(x){x[x %in% FULLGOList]})
-            goI <- lapply(goItmp2, function(x){x[!is.na(sapply(x,getGoCategory))]})
-
-            #goI <- lapply(goItmp,
-            #              function(x){x[x %in% FULLGOList & !is.na(sapply(x,getGoCategory))]})
-            ## remove all the names that are not in GOTERM
-            ## Find parents
-            GOID <- c(GOID, list(lapply(goI, parentsVectWraper, endnode)))
-          }
-        names(GOID) <- names(obj)
-      }
-    else
-      {
-        GOID <- lapply(obj, gowraper, endnode=endnode, probeType=probeType)
-    }
-    ## GOID = GO 
-    objlist <- lapply(GOID, function(x){lapply(x, getGOList, goType=goType)})
-   
-    ## List of GONames: Description
-
-    res <- ontoCompare.main(objlist, method = method[1])
-
-    if(plot)
-      ontoPlot(res, ...)
-
-    return(res)
-  }
-
-## Given oligo ids, return percentage of each
-## end-node, and the % of gene without annotations
-ontoCompare.main <- function(obj, method=c("TGenes", "TIDS", "none"))
-  {
-    ## obj is a list of list.  So if you only have one element,
-    ## you still need to create a list of length 1.
-    method <- method[1]
-    if(length(obj) > 1)
-      {
-        NotFoundGenes <-  unlist(lapply(obj, function(x){sum(is.na(unlist(x)))}))
-        newobj <- lapply(obj, function(x){
-          y <- lapply(x[!is.na(x)], function(x){unlist(x[1,])})
-          table(unlist(y))})
-
-        cat("Number of lists > 1\n")
-        x <- unique(unlist(lapply(newobj, function(x){return(names(x))})))
-        newM <- matrix(0, ncol=length(x) + 1, nrow=length(newobj))
-        colnames(newM) <- c(x, "NotFound")
-        newM[,length(x) + 1] <- NotFoundGenes
-
-        if(is.null(names(obj)))
-          rownames(newM) <- as.character(1:length(obj))
-        else
-          rownames(newM) <- names(obj)
-
-        ## Enter probeType
-        for(i in 1:length(newobj))
-          {
-            newM[i, names(newobj[[i]])] <- newobj[[i]]
-          }
-      }
-    else
-      {
-        cat("Number of lists = 1\n")
-        obj2 <- obj[[1]]
-        xx <- table(unlist(lapply(obj2[!is.na(obj2)], function(x){unlist(x[1,])})))
-        newM <- matrix(c(xx, "NotFound" = sum(is.na(unlist(obj2)))), nrow=1)
-        rownames(newM) <- "1"
-        colnames(newM) <- c(names(xx), "NotFound")
-      }
-
-    cat(paste("Using method:",method[1],"\n"))
-    if(method == "TGenes")
-      {
-        TGenes <- unlist(lapply(obj, length))
-        res <- newM / TGenes
-      }
-    if(method=="TIDS")
-      {
-        TIDs <- lapply(lapply(obj, unlist), length)
-        res <- newM / unlist(TIDs)
-      }
-    if(method=="none")
-      res <- newM
-    return(res)
-  }

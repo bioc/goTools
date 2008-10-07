@@ -9,16 +9,16 @@
 }
 \usage{
 
-ontoCompare(obj,  method=c("TGenes", "TIDS", "none"),
-            probeType=c("GO", "operon", "hgu133a"), goType="All",
-            plot=FALSE,endnode, ...)
+ontoCompare(genelist,probeType=c("GO","hgu133a"),
+goType="All", endnode, method=c("TGenes", "TIDS", "none"), plot=FALSE,
+...) 
 
 ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
 }
 
 %- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{obj}{list of valid probe ids.}
+  \item{genelist}{list of list of valid probe ids.}
   \item{method}{method used to evaluate the percentage of oligos for
     each end-node. 'TGenes' = for each end node, return the number of direct
   children found / total number of probe ids. (default). This includes
@@ -26,7 +26,9 @@ ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
     return the number of direct children found / total number of GO ids
     describing the list. 'none' = for each end node, return the number of direct
     children found.}
-  \item{probeType}{type of input given to the function. ontoCompare is
+  \item{probeType}{type of input given to the function.Valid probe types
+    include GO ids and any probes ids for which a BioC annotation
+    package providing a mapping to GO is available. ontoCompare is
     expecting valid probe ids.}
   \item{goType}{help sort the data by type. If 'All' (default), all oligos
     are taken into account. 'BP' restricts information
@@ -35,7 +37,7 @@ ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
   \item{plot}{logical: if 'TRUE', results are output as a graph.}
   \item{endnode}{list of GO ids corresponding to end-nodes of interest.}
   
-  \item{objM}{result from ontoCompare.}
+  \item{objM}{results from ontoCompare.}
   \item{...}{extra layout parameters to be passed to ontoPlot.}
   
   }
@@ -51,13 +53,13 @@ ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
 
 \examples{
 # Examples use the probeID dataset. For description type ?probeID.
-library(GO)
-library(annotate)
-data(probeID)
+# Not run
 
-ontoCompare(affylist, probeType="hgu133a", plot=TRUE)
-res <- ontoCompare(operonlist["L1"], probeType="operon", method="TIDS")
-ontoPlot(res, cex=0.7)
+#library(GO.db)
+#data(probeID)
+#ontoCompare(affylist, probeType="hgu133a", plot=TRUE)
+#res <- ontoCompare(operonlist["L1"], probeType="operon", method="TIDS")
+#ontoPlot(res, cex=0.7)
 }
 
 \keyword{file}% at least one, from doc/KEYWORDS

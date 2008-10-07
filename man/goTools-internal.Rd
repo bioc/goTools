@@ -1,20 +1,12 @@
 \name{Internal functions}
 
-\alias{getGoCategory}
-\alias{getGOTerm}
-\alias{getGOList}
-\alias{goChildren}
-\alias{parentsList}
-\alias{isEndNode}
-\alias{getGOID}
-\alias{getGO.operon}
-\alias{getGO.operon.main}
-\alias{updateOligo2GO}
-\alias{parentsListWraper}
-\alias{parentsVectWraper}
 \alias{ontoCompare.main}
+\alias{getOntology}
+\alias{getGOID}
+\alias{isEndNode}
+\alias{parentsVectWraper}
 \alias{goParents}
-\alias{gowraper}
+\alias{goChildren}
 
 \title{Internal goTools functions}
  

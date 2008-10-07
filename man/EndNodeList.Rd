@@ -34,13 +34,13 @@ CustomEndNodeList(id,rank=1)
 
 \examples{
 # Examples use the probeID dataset. For description type ? probeID.
-library(GO)
-library(annotate)
-data(probeID)
+library(GO.db)
 EndNodeList()
-
 MFendnode <- CustomEndNodeList("GO:0003674", rank=2)
-ontoCompare(affylist, probeType="hgu133a", endnode=MFendnode, goType="MF")
+
+## Example (not run)
+## data(probeID)
+## ontoCompare(affylist, probeType="hgu133a", endnode=MFendnode, goType="MF")
 
 }
 

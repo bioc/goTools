@@ -1,9 +1,9 @@
 Package: goTools
-Version: 1.13.0
-Date: 2006-09-20
+Version: 1.14.0
+Date: 2008-10-05
 Title: Functions for Gene Ontology database
-Depends: Biobase, annotate, GO
-Suggests: hgu133a
+Depends:  GO.db
+Suggests: hgu133a.db
 biocViews: Microarray,GO,Visualization
 Author: Yee Hwa (Jean) Yang <jean@biostat.ucsf.edu>, Agnes Paquet
         <paquetagnes@yahoo.com>
