@@ -40,7 +40,7 @@
 % library(tools)
 % setwd("c:/MyDoc/Projects/Jean/CVS/goTools/inst/doc")
 % setwd("c:/MyDoc/Projects/madman/Rpacks-devel/goTools/inst/doc")
-% Rnwfile<- file.path("c:/MyDoc/Projects/madman/Rpacks-devel/goTools/inst/doc","goToolsV3.Rnw")
+% Rnwfile<- file.path("c:/MyDoc/Projects/madman/Rpacks-devel/goTools/inst/doc","goTools.Rnw")
 % Sweave(Rnwfile,pdf=TRUE,eps=TRUE,stylepath=TRUE,driver=RweaveLatex())
 
 \tableofcontents
@@ -81,7 +81,6 @@ session.
 <<eval=TRUE,echo=TRUE>>=
 library("goTools", verbose=FALSE)
 data(probeID)  
-ls()
 @
 
 As shown below, \Robject{affylist} is a vector of lists containing 3
@@ -134,18 +133,14 @@ the argument \Robject{probeType}. For more details about it,you can
 refer to the corresponding help file by typing:
  \Rfunction{?ontoCompare}.
 
-\subsubsection{Examples}
+%\subsubsection{Examples}
+%The following examples demonstrate how to use \Rfunction{ontoCompare} on the
+%\Robject{probeID} dataset.
 
-The following examples demonstrate how to use \Rfunction{ontoCompare} on the
-\Robject{probeID} dataset.
-
-
-<<eval=TRUE,echo=TRUE>>=
+<<eval=FALSE,echo=TRUE>>=
 library(GO.db)
 subset=c(L1=list(affylist[[1]][1:5]),L2=list(affylist[[2]][1:5]))
-##library(annotate)
 res <-ontoCompare(subset, probeType="hgu133a")
-res[,1:2]
 @
 
 \subsubsection{Methods for computing percentages}
@@ -169,7 +164,6 @@ estimate the percentage of probes under each element of
 
 \end{enumerate}
  
-
 \subsection{Plotting the results}
 
 The plots are produced using the function \Rfunction{ontoPlot}. It is called by
@@ -181,7 +175,9 @@ chart. In other cases, it will return a bargraph. You can modify
 \Rfunction{ontoPlot} layout parameters using usual R graphics layout
 parameters. For more details, type \Rfunction{?par}.
 
-<<ontoPlotEg1,fig=TRUE,prefix=FALSE,echo=TRUE,include=FALSE>>=
+<<ontoPlotEg1,fig=TRUE,prefix=FALSE,echo=TRUE,include=FALSE, eval=FALSE>>=
+library(GO.db)
+subset=c(L1=list(affylist[[1]][1:5]),L2=list(affylist[[2]][1:5]))
 res <- ontoCompare(subset, probeType="hgu133a", plot=TRUE)
 @
 
@@ -208,7 +204,7 @@ set of end nodes. It returns all GO ids children of \Robject{id} up to
 \Robject{rank} levels below \Robject{id}.
 
 
-<<eval=TRUE,echo=TRUE>>=
+<<eval=FALSE,echo=TRUE>>=
 MFendnode <- CustomEndNodeList("GO:0003674", rank=2)
 @
 
@@ -216,10 +212,11 @@ Finally, the code below shows you how to use a custom end node list, and also
 how to modify the \Robject{goType} argument to select only Molecular
 Function (MF) ontologies. 
 
-<<eval=TRUE,echo=TRUE>>=
-#res <- ontoCompare(subset, probeType="hgu133a",
-#endnode=MFendnode, goType="MF")
-@
+
+<<eval=FALSE,echo=TRUE>>=
+res <- ontoCompare(subset, probeType="hgu133a", endnode=MFendnode, goType="MF")
+@ 
+
 
 
 You can also create a
@@ -235,17 +232,17 @@ the following format:
 
 
 
-\begin{figure} %[htpb]
-\begin{center}
+%\begin{figure} %[htpb]
+%\begin{center}
 %\begin{tabular}{cc}
-\includegraphics[width=3in,height=3in,angle=0]{ontoPlotEg1} %&
+%\includegraphics[width=3in,height=3in,angle=0]{ontoPlotEg1} %&
 %\includegraphics[width=3in,height=3in,angle=0]{ontoPlotEg2} \\
 %(a) & (b)\\
 %\end{tabular}
-\end{center}
-\caption{Plots obtained using \Rfunction{ontoCompare} on \Robject{probeID} dataset}
-\protect\label{fig:ontoPlotEg}
-\end{figure}
+%\end{center}
+%\caption{Plots obtained using \Rfunction{ontoCompare} on \Robject{probeID} dataset}
+%\protect\label{fig:ontoPlotEg}
+%\end{figure}
 
 %\bibliography{marrayPacks}
 

@@ -33,10 +33,10 @@ CustomEndNodeList(id,rank=1)
 \seealso{\code{\link{ontoCompare}}}
 
 \examples{
-# Examples use the probeID dataset. For description type ? probeID.
-library(GO.db)
-EndNodeList()
-MFendnode <- CustomEndNodeList("GO:0003674", rank=2)
+## Examples use the probeID dataset. For description type ? probeID.
+## library(GO.db)
+## EndNodeList()
+## MFendnode <- CustomEndNodeList("GO:0003674", rank=2)
 
 ## Example (not run)
 ## data(probeID)
