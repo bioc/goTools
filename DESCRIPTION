@@ -1,5 +1,5 @@
 Package: goTools
-Version: 1.19.0
+Version: 1.19.1
 Date: 2008-10-20
 Title: Functions for Gene Ontology database
 Depends:  GO.db
@@ -10,5 +10,5 @@ Author: Yee Hwa (Jean) Yang <jean@biostat.ucsf.edu>, Agnes Paquet
 Maintainer: Agnes Paquet <paquetagnes@yahoo.com>
 Description: Wraper functions for description/comparison of oligo ID
         list using Gene Ontology database
-License: GPL2
+License: GPL-2
 LazyLoad: yes
