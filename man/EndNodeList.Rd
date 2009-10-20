@@ -1,4 +1,4 @@
-\name{goTools}
+\name{EndNodeList}
 \alias{EndNodeList}
 \alias{CustomEndNodeList}
 
