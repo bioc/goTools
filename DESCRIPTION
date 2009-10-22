@@ -1,6 +1,6 @@
 Package: goTools
-Version: 1.19.2
-Date: 2009-10-20
+Version: 1.19.3
+Date: 2009-10-23
 Title: Functions for Gene Ontology database
 Depends:  GO.db
 Suggests: hgu133a.db
