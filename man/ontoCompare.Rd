@@ -11,9 +11,9 @@
 
 ontoCompare(genelist,probeType=c("GO","hgu133a"),
 goType="All", endnode, method=c("TGenes", "TIDS", "none"), plot=FALSE,
-...) 
+...)
 
-ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
+ontoPlot(objM, names.arg=NULL,beside=TRUE, las=2,legend.text=TRUE, ...)
 }
 
 %- maybe also `usage' for other objects documented here.
@@ -36,16 +36,22 @@ ontoPlot(objM, beside=TRUE, las=2,legend.text=TRUE, ...)
     Molecular Function.}
   \item{plot}{logical: if 'TRUE', results are output as a graph.}
   \item{endnode}{list of GO ids corresponding to end-nodes of interest.}
-  
+  \item{beside}{Logical. If 'TRUE', the bars of the barplot are
+    portrayed as juxtaposed bars. See ?barplot for more details.}
+  \item{las}{numeric: if las=2, the axis labels are displayed
+    perpendicular to the axis. See ?par for more details.}
+  \item{legend.text}{ vector of text used to construct a legend for the
+    plot. See ?barplot for more details.}
   \item{objM}{results from ontoCompare.}
+  \item{names.arg}{Labels to use in ontoPlot.}
   \item{...}{extra layout parameters to be passed to ontoPlot.}
-  
+
   }
 
   \value{
 
     Returns the percentage of probes children of nodes contained in
-    endnode. If 'plot' = TRUE, results are plotted as a pie chart or a bargraph. 
+    endnode. If 'plot' = TRUE, results are plotted as a pie chart or a bargraph.
 }
 
 \author{Yee Hwa (Jean) Yang, Agnes Paquet}
