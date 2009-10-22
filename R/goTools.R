@@ -7,7 +7,7 @@
 
 ##source("C:/MyDoc/Projects/madman/Rpacks-devel/goTools/R/goTools_V3.R")
 ## library(GO.db)
-## 
+##
 
 ontoCompare <- function(genelist,probeType=c("GO","hgu133a"),goType="All",
                         endnode, method=c("TGenes","TIDS","none"),plot=FALSE,...)
@@ -44,9 +44,9 @@ ontoCompare <- function(genelist,probeType=c("GO","hgu133a"),goType="All",
             tmp2 <- lapply(tmp,function(x){return(x[x %in% names(FullGOenv)])})
             golistOK <- c(golistOK,list(tmp2))
           }
-    
+
     names(golistOK) <- names(golist)
-    
+
     ##Now we have a list of list of goIds
     ## Get the corresponding endnodes
 
@@ -59,7 +59,7 @@ ontoCompare <- function(genelist,probeType=c("GO","hgu133a"),goType="All",
       }
     names(parentsIDs) <- names(golistOK)
 
- 
+
     finalParentsIDs <- c()
     ## Keep only Ontology of interest as specified in goType
     for(i in 1:length(parentsIDs))
@@ -71,7 +71,7 @@ ontoCompare <- function(genelist,probeType=c("GO","hgu133a"),goType="All",
 
     ## Reference endnode for the plot
     refnode <- getOntology(endnode,goType,FullGOenv)
-    
+
     ## Now that we have the mapping for the parents
     ## Count how many
 
@@ -228,7 +228,8 @@ ontoPlot <- function(objM,
                      ...)
   {
     ## obj <- results from ontoCompare
-    names.arg=rownames(objM)
+      if (is.null(names.arg))
+          names.arg=rownames(objM)
     if(ncol(objM) == 1)
       pie(as.vector(objM[objM!=0]), labels=names.arg, ...)
     else {
