@@ -55,7 +55,7 @@ genes.
 \paragraph{Installing the package:}
 To install the \Rpackage{goTools} package, go
 to the Bioconductor installation web site
-\url{http://www.bioconductor.org/faq.html} for more detailed instructions.
+\url{http://www.bioconductor.org/help/faq} for more detailed instructions.
 
 
 \paragraph{Help files:}
