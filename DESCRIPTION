@@ -1,8 +1,9 @@
 Package: goTools
-Version: 1.27.0
+Version: 1.27.1
 Date: 2009-10-23
 Title: Functions for Gene Ontology database
 Depends:  GO.db
+Imports: AnnotationDbi, GO.db, graphics, grDevices
 Suggests: hgu133a.db
 biocViews: Microarray,GO,Visualization
 Author: Yee Hwa (Jean) Yang <jean@biostat.ucsf.edu>, Agnes Paquet
